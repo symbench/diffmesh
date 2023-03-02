@@ -1,2 +1,5 @@
 .vscode
 build*/
+*.egg-info
+_skbuild
+*.so
