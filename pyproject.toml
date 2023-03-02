@@ -1,8 +1,19 @@
+# https://github.com/pybind/scikit_build_example
+# https://pypi.org/project/scikit-build-core/
+
 [build-system]
-requires = [
-    "setuptools>=42",
-    "scikit-build>=0.13",
-    "cmake>=3.18",
-    "ninja",
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "diffmesh"
+version = "0.1"
+description="Differential meshing"
+license = {text = "GPL-3.0-only"}
+authors = [
+  { name = "Miklos Maroti", email = "mmaroti@gmail.com" },
 ]
-build-backend = "setuptools.build_meta"
+requires-python = ">=3.7"
+
+[tool.scikit-build]
+build-dir = "build"

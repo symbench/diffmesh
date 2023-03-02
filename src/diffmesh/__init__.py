@@ -13,14 +13,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from skbuild import setup
-
-setup(
-    name="diffmesh",
-    version="0.1",
-    description="Differentiable meshing",
-    author='Miklos Maroti',
-    license="GPL 3",
-    packages=['diffmesh'],
-    python_requires=">=3.7",
-)
+from ._diffmesh import CGAL_VERSION_STR

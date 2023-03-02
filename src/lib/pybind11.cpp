@@ -25,7 +25,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(_diffmesh, m)
 {
-    m.doc() = "Differentiable meshing C++ library";
+    m.doc() = "diffmesh C++ backend";
 
     m.attr("CGAL_VERSION_STR") = CGAL_VERSION_STR;
 }
