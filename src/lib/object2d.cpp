@@ -20,17 +20,21 @@
 #include "object2d.hpp"
 
 #include <sstream>
+#include <boost/multiprecision/mpfr.hpp>
+#include <boost/multiprecision/number.hpp>
+#include <CGAL/Polygon_set_2.h>
 
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Vector_2<Kernel> Vector_2;
 typedef CGAL::Polygon_2<Kernel> Polygon_2;
+typedef CGAL::Polygon_set_2<Kernel> Polygon_set_2;
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 
-Object2d Object2d::polygon(const std::vector<std::array<float, 2>> &points)
+Object2d Object2d::polygon(const std::vector<std::tuple<double, double>> &points)
 {
         Polygon_2 polygon;
         for (auto p : points)
-                polygon.push_back(Point_2(p[0], p[1]));
+                polygon.push_back(Point_2(std::get<0>(p), std::get<1>(p)));
 
         if (!polygon.is_simple())
                 throw std::invalid_argument("polygon is not simple");
@@ -40,16 +44,29 @@ Object2d Object2d::polygon(const std::vector<std::array<float, 2>> &points)
         return object;
 }
 
-Object2d Object2d::rectangle(float width, float height)
+Object2d Object2d::rectangle(double width, double height)
 {
-        width *= 0.5f;
-        height *= 0.5f;
-        std::vector<std::array<float, 2>> points = {
+        width *= 0.5;
+        height *= 0.5;
+        std::vector<std::tuple<double, double>> points = {
             {-width, -height},
             {+width, -height},
             {+width, +height},
             {-width, +height},
         };
+        return polygon(points);
+}
+
+Object2d Object2d::circle(double radius, std::size_t segments)
+{
+        if (radius <= 0.0 || segments < 3)
+                throw std::invalid_argument("invalid radius or segments");
+
+        double step = 2.0 * 3.14159265358979323846 / segments;
+        std::vector<std::tuple<double, double>> points;
+        for (std::size_t i = 0; i < segments; ++i)
+                points.emplace_back(radius * std::cos(i * step), radius * std::sin(i * step));
+
         return polygon(points);
 }
 
@@ -78,11 +95,55 @@ std::size_t Object2d::num_points() const
 Object2d Object2d::get_component(std::size_t index) const
 {
         if (index >= components.size())
-                throw std::invalid_argument("invalid index");
+                throw std::invalid_argument("invalid component index");
 
         Object2d object;
         object.components.emplace_back(components[index]);
         return object;
+}
+
+Object2d Object2d::get_polygon(std::size_t index) const
+{
+        if (components.size() != 1)
+                throw std::invalid_argument("must have a single component");
+
+        if (index > components[0].number_of_holes())
+                throw std::invalid_argument("invalid polygon index");
+
+        Polygon_2 polygon;
+
+        if (index == 0)
+                polygon = components[0].outer_boundary();
+        else
+        {
+                polygon = components[0].holes()[index - 1];
+                polygon.reverse_orientation();
+        }
+        assert(polygon.is_simple() && polygon.is_counterclockwise_oriented());
+
+        Object2d object;
+        object.components.emplace_back(polygon);
+        return object;
+}
+
+std::vector<std::tuple<double, double>> Object2d::get_points() const
+{
+        if (components.size() != 1)
+                throw std::invalid_argument("must have a single component");
+
+        if (components[0].number_of_holes() != 0)
+                throw std::invalid_argument("must have no holes");
+
+        Polygon_2 polygon = components[0].outer_boundary();
+
+        std::vector<std::tuple<double, double>> result;
+        for (auto &v : polygon.container())
+        {
+                double x = CGAL::to_double(v.x());
+                double y = CGAL::to_double(v.y());
+                result.push_back({x, y});
+        }
+        return result;
 }
 
 Object2d Object2d::transform(Aff_Transformation_2 trans) const
@@ -98,19 +159,67 @@ Object2d Object2d::transform(Aff_Transformation_2 trans) const
         return object;
 }
 
-Object2d Object2d::translate(float xdiff, float ydiff) const
+Object2d Object2d::translate(double xdiff, double ydiff) const
 {
         return transform(Aff_Transformation_2(CGAL::TRANSLATION, Vector_2(xdiff, ydiff)));
 }
 
-Object2d Object2d::rotate(float angle) const
+Object2d Object2d::rotate(double angle) const
 {
         return transform(Aff_Transformation_2(CGAL::ROTATION, std::sin(angle), std::cos(angle)));
 }
 
-Object2d Object2d::scale(float scale) const
+Object2d Object2d::scale(double scale) const
 {
         return transform(Aff_Transformation_2(CGAL::SCALING, scale));
+}
+
+Object2d Object2d::join(const Object2d &other) const
+{
+        Polygon_set_2 set1;
+        for (auto &c : components)
+                set1.insert(c);
+
+        Polygon_set_2 set2;
+        for (auto &c : other.components)
+                set2.insert(c);
+
+        set1.join(set2);
+        Object2d object;
+        set1.polygons_with_holes(std::back_inserter(object.components));
+        return object;
+}
+
+Object2d Object2d::intersection(const Object2d &other) const
+{
+        Polygon_set_2 set1;
+        for (auto &c : components)
+                set1.insert(c);
+
+        Polygon_set_2 set2;
+        for (auto &c : other.components)
+                set2.insert(c);
+
+        set1.intersection(set2);
+        Object2d object;
+        set1.polygons_with_holes(std::back_inserter(object.components));
+        return object;
+}
+
+Object2d Object2d::difference(const Object2d &other) const
+{
+        Polygon_set_2 set1;
+        for (auto &c : components)
+                set1.insert(c);
+
+        Polygon_set_2 set2;
+        for (auto &c : other.components)
+                set2.insert(c);
+
+        set1.difference(set2);
+        Object2d object;
+        set1.polygons_with_holes(std::back_inserter(object.components));
+        return object;
 }
 
 std::string Object2d::repr() const

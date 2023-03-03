@@ -21,6 +21,7 @@
 #define OBJECT2D_HPP
 
 #include <vector>
+#include <tuple>
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Polygon_with_holes_2.h>
@@ -32,18 +33,25 @@ typedef CGAL::Aff_transformation_2<Kernel> Aff_Transformation_2;
 class Object2d
 {
 public:
-        static Object2d polygon(const std::vector<std::array<float, 2>> &points);
-        static Object2d rectangle(float width, float height);
+        static Object2d polygon(const std::vector<std::tuple<double, double>> &points);
+        static Object2d rectangle(double width, double height);
+        static Object2d circle(double radius, std::size_t segments = 60);
 
         std::size_t num_components() const;
         std::size_t num_polygons() const;
         std::size_t num_points() const;
 
         Object2d get_component(std::size_t index) const;
+        Object2d get_polygon(std::size_t index) const;
+        std::vector<std::tuple<double, double>> get_points() const;
 
-        Object2d translate(float xdiff, float ydiff) const;
-        Object2d rotate(float angle) const;
-        Object2d scale(float scale) const;
+        Object2d translate(double xdiff, double ydiff) const;
+        Object2d rotate(double angle) const;
+        Object2d scale(double scale) const;
+
+        Object2d join(const Object2d &other) const;
+        Object2d intersection(const Object2d &other) const;
+        Object2d difference(const Object2d &other) const;
 
         std::string repr() const;
 

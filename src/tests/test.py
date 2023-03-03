@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright (C) 2023, Miklos Maroti
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,15 +14,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ._diffmesh import (
-    CGAL_VERSION_STR,
-    Object2d,
-)
+from diffmesh import Object2d
 
-from .object2d_ext import plt_path
-Object2d.plt_path = plt_path
+import matplotlib.pyplot as plt
+from matplotlib.patches import PathPatch
 
-__all__ = [
-    "CGAL_VERSION_STR",
-    "Object2d",
-]
+
+r = Object2d.rectangle(10, 10)
+c = Object2d.circle(5)
+
+s = Object2d()
+s = s.join(r.translate(6, 0))
+s = s.join(c.translate(0, 6))
+s = s.join(c.translate(-7, 0))
+s = s.join(r.translate(0, -7))
+s = s.difference(c.translate(12, -5))
+s = s.join(c.translate(13, -6))
+s = s.intersection(r.scale(2.0))
+
+path = s.plt_path()
+
+_, ax = plt.subplots()
+ax.set_xlim(-30, 30)
+ax.set_ylim(-30, 30)
+ax.add_patch(PathPatch(path))
+plt.show()
