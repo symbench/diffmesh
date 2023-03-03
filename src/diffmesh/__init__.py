@@ -13,4 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ._diffmesh import CGAL_VERSION_STR
+from ._diffmesh import (
+    CGAL_VERSION_STR,
+    Object2d,
+)
+
+__all__ = [
+    "CGAL_VERSION_STR",
+    "Object2d",
+]

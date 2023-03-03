@@ -8,16 +8,9 @@ set(CGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE "TRUE")
 find_package(CGAL REQUIRED)
 
 pybind11_add_module(_diffmesh
-    src/lib/pybind11.cpp)
+    src/lib/pybind11.cpp
+    src/lib/object2d.cpp)
 
 target_link_libraries(_diffmesh PRIVATE CGAL::CGAL)
 
 install(TARGETS _diffmesh LIBRARY DESTINATION diffmesh)
-
-# add_executable(test1
-#     src/lib/test1.cpp)
-# target_link_libraries(test1 CGAL::CGAL)
-#
-# add_executable(test2
-#    src/lib/test2.cpp)
-# target_link_libraries(test2 CGAL::CGAL)
