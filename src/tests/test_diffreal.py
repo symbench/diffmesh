@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright (C) 2023, Miklos Maroti
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,17 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ._diffmesh import (
-    CGAL_VERSION_STR,
-    DiffReal,
-    Object2d,
-)
+from diffmesh import DiffReal
 
-from .object2d_ext import plt_path
-Object2d.plt_path = plt_path
-
-__all__ = [
-    "CGAL_VERSION_STR",
-    "DiffReal",
-    "Object2d",
-]
+a = DiffReal(1.0)
+b = DiffReal(2.0)
+c = a + b
+print(c.to_double())

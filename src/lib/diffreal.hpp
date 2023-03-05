@@ -34,6 +34,8 @@ public:
         DiffReal(CGAL::Gmpq value) : value(value) {}
         DiffReal(const DiffReal &other) : value(other.value) {}
 
+        double to_double() const { return CGAL::to_double(value); }
+
         DiffReal &operator=(const DiffReal &other)
         {
                 value = other.value;
@@ -74,14 +76,6 @@ public:
                 value /= other.value;
                 return *this;
         }
-
-        typedef CGAL::Tag_false Has_gcd;
-        typedef CGAL::Tag_true Has_division;
-        typedef CGAL::Tag_false Has_sqrt;
-
-        typedef CGAL::Tag_true Has_exact_ring_operations;
-        typedef CGAL::Tag_true Has_exact_division;
-        typedef CGAL::Tag_false Has_exact_sqrt;
 };
 
 std::ostream &operator<<(std::ostream &out, const DiffReal &x);

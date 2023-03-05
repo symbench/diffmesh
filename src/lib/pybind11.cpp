@@ -17,6 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "diffreal.hpp"
 #include "object2d.hpp"
 
 #include <CGAL/version.h>
@@ -29,6 +30,26 @@ PYBIND11_MODULE(_diffmesh, m)
 {
     m.doc() = "diffmesh C++ backend";
     m.attr("CGAL_VERSION_STR") = CGAL_VERSION_STR;
+
+    py::class_<DiffReal, std::shared_ptr<DiffReal>>(m, "DiffReal")
+        .def(py::init())
+        .def(py::init<double>(), py::arg("value"))
+        .def("to_double", &DiffReal::to_double)
+        .def("__eq__", &DiffReal::operator==, py::arg("other"))
+        .def("__ne__", &DiffReal::operator!=, py::arg("other"))
+        .def("__lt__", &DiffReal::operator<, py::arg("other"))
+        .def("__le__", &DiffReal::operator<=, py::arg("other"))
+        .def("__gt__", &DiffReal::operator>, py::arg("other"))
+        .def("__ge__", &DiffReal::operator>=, py::arg("other"))
+        .def("__neg__", static_cast<DiffReal (DiffReal::*)() const>(&DiffReal::operator-))
+        .def("__add__", &DiffReal::operator+, py::arg("other"))
+        .def("__sub__", static_cast<DiffReal (DiffReal::*)(const DiffReal &) const>(&DiffReal::operator-), py::arg("other"))
+        .def("__mul__", &DiffReal::operator*, py::arg("other"))
+        .def("__truediv__", &DiffReal::operator/, py::arg("other"))
+        .def("__iadd__", &DiffReal::operator+=, py::arg("other"))
+        .def("__isub__", &DiffReal::operator-=, py::arg("other"))
+        .def("__imul__", &DiffReal::operator*=, py::arg("other"))
+        .def("__idiv__", &DiffReal::operator/=, py::arg("other"));
 
     py::class_<Object2d, std::shared_ptr<Object2d>>(m, "Object2d")
         .def(py::init())
