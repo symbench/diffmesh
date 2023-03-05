@@ -20,13 +20,18 @@
 #ifndef OBJECT2D_HPP
 #define OBJECT2D_HPP
 
+#include "diffreal.hpp"
+
 #include <vector>
 #include <tuple>
 
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+// #include <CGAL/Gmpq.h>
+#include <CGAL/Cartesian.h>
 #include <CGAL/Polygon_with_holes_2.h>
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+// typedef CGAL::Cartesian<CGAL::Gmpq> Kernel;
+typedef CGAL::Cartesian<DiffReal> Kernel;
+
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 typedef CGAL::Aff_transformation_2<Kernel> Aff_Transformation_2;
 

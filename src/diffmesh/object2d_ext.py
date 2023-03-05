@@ -14,6 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 def plt_path(object: 'Object2d') -> 'Path':
+    """
+    Converts an object (multiple polygons with holes) to a
+    matplotlib path object that can be displayed as a patch.
+    """
     from matplotlib.path import Path
 
     points = []
@@ -28,16 +32,11 @@ def plt_path(object: 'Object2d') -> 'Path':
         points.append((0.0, 0.0))
         codes.append(Path.CLOSEPOLY)
 
-    def doit(obj):
-        if obj.num_components() != 1:
-            for i in range(obj.num_components()):
-                doit(obj.get_component(i))
-            return
-
-        assert obj.num_polygons() >= 1
+    for i in range(object.num_components()):
+        obj = object.get_component(i)
+        assert obj.num_components() == 1
         addit(obj.get_polygon(0).get_points())
         for i in range(1, obj.num_polygons()):
             addit(obj.get_polygon(i).get_points()[::-1])
 
-    doit(object)
     return Path(points, codes)
