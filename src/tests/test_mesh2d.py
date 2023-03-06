@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright (C) 2023, Miklos Maroti
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,21 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ._diffmesh import (
-    CGAL_VERSION_STR,
-    DiffReal,
-    Object2d,
-    Mesh2d,
-)
+from diffmesh import Object2d, DiffReal, Mesh2d
 
-from .object2d_ext import plt_path, plt_arrows, plt_plot
-Object2d.plt_path = plt_path
-Object2d.plt_arrows = plt_arrows
-Object2d.plt_plot = plt_plot
+width = DiffReal(10, [1, 0])
+height = DiffReal(10, [0, 1])
 
-__all__ = [
-    "CGAL_VERSION_STR",
-    "DiffReal",
-    "Object2d",
-    "Mesh2d",
-]
+r = Object2d.rectangle(width, height)
+r = r.join(r.translate(1, 1))
+
+m = Mesh2d(r)
+print(m.num_vertices(), m.num_faces())
+print(m.vertices())
+print(m.faces())

@@ -147,6 +147,13 @@ DiffReal DiffReal::sin() const
         return result;
 }
 
+std::string DiffReal::repr() const
+{
+        std::stringstream str;
+        str << CGAL::to_double(value);
+        return str.str();
+}
+
 std::ostream &operator<<(std::ostream &out, const DiffReal &x)
 {
         out << x.value;

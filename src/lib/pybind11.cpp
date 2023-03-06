@@ -19,6 +19,7 @@
 
 #include "diffreal.hpp"
 #include "object2d.hpp"
+#include "mesh2d.hpp"
 
 #include <CGAL/version.h>
 #include <pybind11/pybind11.h>
@@ -51,7 +52,8 @@ PYBIND11_MODULE(_diffmesh, m)
         .def("__iadd__", &DiffReal::operator+=, py::arg("other"))
         .def("__isub__", &DiffReal::operator-=, py::arg("other"))
         .def("__imul__", &DiffReal::operator*=, py::arg("other"))
-        .def("__idiv__", &DiffReal::operator/=, py::arg("other"));
+        .def("__idiv__", &DiffReal::operator/=, py::arg("other"))
+        .def("__repr__", &DiffReal::repr);
 
     py::class_<Object2d, std::shared_ptr<Object2d>>(m, "Object2d")
         .def(py::init())
@@ -60,11 +62,11 @@ PYBIND11_MODULE(_diffmesh, m)
         .def_static("circle", &Object2d::circle, py::arg("radius"), py::arg("segments") = 60)
         .def("num_components", &Object2d::num_components)
         .def("num_polygons", &Object2d::num_polygons)
-        .def("num_points", &Object2d::num_points)
+        .def("num_vertices", &Object2d::num_vertices)
         .def("bbox", &Object2d::bbox)
         .def("get_component", &Object2d::get_component, py::arg("index"))
         .def("get_polygon", &Object2d::get_polygon, py::arg("index"))
-        .def("get_points", &Object2d::get_points)
+        .def("get_vertices", &Object2d::get_vertices)
         .def("translate", static_cast<Object2d (Object2d::*)(const DiffReal &, const DiffReal &) const>(&Object2d::translate), py::arg("xdiff"), py::arg("ydiff"))
         .def("translate", static_cast<Object2d (Object2d::*)(double, double) const>(&Object2d::translate), py::arg("xdiff"), py::arg("ydiff"))
         .def("rotate", static_cast<Object2d (Object2d::*)(const DiffReal &) const>(&Object2d::rotate), py::arg("angle"))
@@ -75,4 +77,11 @@ PYBIND11_MODULE(_diffmesh, m)
         .def("intersection", &Object2d::intersection, py::arg("other"))
         .def("difference", &Object2d::difference, py::arg("other"))
         .def("__repr__", &Object2d::repr);
+
+    py::class_<Mesh2d, std::shared_ptr<Mesh2d>>(m, "Mesh2d")
+        .def(py::init<const Object2d &>(), py::arg("object"))
+        .def("num_vertices", &Mesh2d::num_vertices)
+        .def("num_faces", &Mesh2d::num_faces)
+        .def("vertices", &Mesh2d::vertices)
+        .def("faces", &Mesh2d::faces);
 }

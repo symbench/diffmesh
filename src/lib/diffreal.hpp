@@ -25,6 +25,7 @@
 #include <CGAL/Gmpq.h>
 #include <CGAL/number_type_basic.h>
 #include <CGAL/Coercion_traits.h>
+#include <CGAL/Cartesian.h>
 
 class DiffReal
 {
@@ -71,6 +72,8 @@ public:
 
         DiffReal cos() const;
         DiffReal sin() const;
+
+        std::string repr() const;
 };
 
 std::ostream &operator<<(std::ostream &out, const DiffReal &x);
@@ -181,5 +184,7 @@ namespace CGAL
                 };
         };
 }
+
+typedef CGAL::Cartesian<DiffReal> Kernel;
 
 #endif // DIFFREAL_HPP

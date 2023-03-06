@@ -79,7 +79,7 @@ std::size_t Object2d::num_polygons() const
         return n;
 }
 
-std::size_t Object2d::num_points() const
+std::size_t Object2d::num_vertices() const
 {
         std::size_t n = 0;
         for (auto &c : components)
@@ -134,7 +134,7 @@ Object2d Object2d::get_polygon(std::size_t index) const
         return object;
 }
 
-std::vector<std::tuple<DiffReal, DiffReal>> Object2d::get_points() const
+std::vector<std::tuple<DiffReal, DiffReal>> Object2d::get_vertices() const
 {
         if (components.size() != 1)
                 throw std::invalid_argument("must have a single component");

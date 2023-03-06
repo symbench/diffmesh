@@ -48,9 +48,9 @@ def plt_path(object: 'Object2d', derivs: List[float] = []) -> 'Path':
     for i in range(object.num_components()):
         obj = object.get_component(i)
         assert obj.num_components() == 1
-        addit(obj.get_polygon(0).get_points())
+        addit(obj.get_polygon(0).get_vertices())
         for i in range(1, obj.num_polygons()):
-            addit(obj.get_polygon(i).get_points()[::-1])
+            addit(obj.get_polygon(i).get_vertices()[::-1])
 
     return Path(points, codes)
 
@@ -82,9 +82,9 @@ def plt_arrows(object: 'Object2d', derivs: List[float] = []) \
     for i in range(object.num_components()):
         obj = object.get_component(i)
         assert obj.num_components() == 1
-        addit(obj.get_polygon(0).get_points())
+        addit(obj.get_polygon(0).get_vertices())
         for i in range(1, obj.num_polygons()):
-            addit(obj.get_polygon(i).get_points()[::-1])
+            addit(obj.get_polygon(i).get_vertices()[::-1])
 
     return xs, ys, us, vs
 

@@ -25,12 +25,8 @@
 #include <vector>
 #include <tuple>
 
-// #include <CGAL/Gmpq.h>
-#include <CGAL/Cartesian.h>
 #include <CGAL/Polygon_with_holes_2.h>
-
-// typedef CGAL::Cartesian<CGAL::Gmpq> Kernel;
-typedef CGAL::Cartesian<DiffReal> Kernel;
+#include <CGAL/Aff_transformation_2.h>
 
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 typedef CGAL::Aff_transformation_2<Kernel> Aff_Transformation_2;
@@ -44,12 +40,12 @@ public:
 
         std::size_t num_components() const;
         std::size_t num_polygons() const;
-        std::size_t num_points() const;
+        std::size_t num_vertices() const;
         std::tuple<double, double, double, double> bbox() const;
 
         Object2d get_component(std::size_t index) const;
         Object2d get_polygon(std::size_t index) const;
-        std::vector<std::tuple<DiffReal, DiffReal>> get_points() const;
+        std::vector<std::tuple<DiffReal, DiffReal>> get_vertices() const;
 
         Object2d translate(const DiffReal &xdiff, const DiffReal &ydiff) const;
         Object2d translate(double xdiff, double ydiff) const
@@ -75,10 +71,15 @@ public:
 
         std::string repr() const;
 
+        const std::vector<Polygon_with_holes_2> &get_components() const
+        {
+                return components;
+        }
+
 protected:
         Object2d transform(Aff_Transformation_2 trans) const;
 
         std::vector<Polygon_with_holes_2> components;
 };
 
-#endif // OBJECT2d_HPP
+#endif // OBJECT2D_HPP

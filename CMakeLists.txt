@@ -9,6 +9,7 @@ find_package(CGAL REQUIRED)
 
 pybind11_add_module(_diffmesh
     src/lib/object2d.cpp
+    src/lib/mesh2d.cpp
     src/lib/diffreal.cpp
     src/lib/pybind11.cpp)
 

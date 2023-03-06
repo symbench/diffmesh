@@ -16,7 +16,6 @@
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import PathPatch
-from typing import List
 from diffmesh import Object2d, DiffReal
 
 rwidth = DiffReal(10, [1, 0, 0, 0])
