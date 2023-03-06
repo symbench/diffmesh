@@ -38,9 +38,9 @@ typedef CGAL::Aff_transformation_2<Kernel> Aff_Transformation_2;
 class Object2d
 {
 public:
-        static Object2d polygon(const std::vector<std::tuple<double, double>> &points);
-        static Object2d rectangle(double width, double height);
-        static Object2d circle(double radius, std::size_t segments = 60);
+        static Object2d polygon(const std::vector<std::tuple<DiffReal, DiffReal>> &points);
+        static Object2d rectangle(const DiffReal &width, const DiffReal &height);
+        static Object2d circle(const DiffReal &radius, std::size_t segments = 60);
 
         std::size_t num_components() const;
         std::size_t num_polygons() const;
@@ -49,11 +49,11 @@ public:
 
         Object2d get_component(std::size_t index) const;
         Object2d get_polygon(std::size_t index) const;
-        std::vector<std::tuple<double, double>> get_points() const;
+        std::vector<std::tuple<DiffReal, DiffReal>> get_points() const;
 
-        Object2d translate(double xdiff, double ydiff) const;
-        Object2d rotate(double angle) const;
-        Object2d scale(double scale) const;
+        Object2d translate(const DiffReal &xdiff, const DiffReal &ydiff) const;
+        Object2d rotate(const DiffReal &angle) const;
+        Object2d scale(const DiffReal &scale) const;
 
         Object2d join(const Object2d &other) const;
         Object2d intersection(const Object2d &other) const;

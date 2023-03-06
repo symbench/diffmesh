@@ -29,7 +29,7 @@ typedef CGAL::Polygon_2<Kernel> Polygon_2;
 typedef CGAL::Polygon_set_2<Kernel> Polygon_set_2;
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 
-Object2d Object2d::polygon(const std::vector<std::tuple<double, double>> &points)
+Object2d Object2d::polygon(const std::vector<std::tuple<DiffReal, DiffReal>> &points)
 {
         Polygon_2 polygon;
         for (auto p : points)
@@ -43,26 +43,26 @@ Object2d Object2d::polygon(const std::vector<std::tuple<double, double>> &points
         return object;
 }
 
-Object2d Object2d::rectangle(double width, double height)
+Object2d Object2d::rectangle(const DiffReal &width, const DiffReal &height)
 {
-        width *= 0.5;
-        height *= 0.5;
-        std::vector<std::tuple<double, double>> points = {
-            {-width, -height},
-            {+width, -height},
-            {+width, +height},
-            {-width, +height},
+        DiffReal width2(width * 0.5);
+        DiffReal height2(height * 0.5);
+        std::vector<std::tuple<DiffReal, DiffReal>> points = {
+            {-width2, -height2},
+            {+width2, -height2},
+            {+width2, +height2},
+            {-width2, +height2},
         };
         return polygon(points);
 }
 
-Object2d Object2d::circle(double radius, std::size_t segments)
+Object2d Object2d::circle(const DiffReal &radius, std::size_t segments)
 {
         if (radius <= 0.0 || segments < 3)
                 throw std::invalid_argument("invalid radius or segments");
 
         double step = 2.0 * 3.14159265358979323846 / segments;
-        std::vector<std::tuple<double, double>> points;
+        std::vector<std::tuple<DiffReal, DiffReal>> points;
         for (std::size_t i = 0; i < segments; ++i)
                 points.emplace_back(radius * std::cos(i * step), radius * std::sin(i * step));
 
@@ -134,7 +134,7 @@ Object2d Object2d::get_polygon(std::size_t index) const
         return object;
 }
 
-std::vector<std::tuple<double, double>> Object2d::get_points() const
+std::vector<std::tuple<DiffReal, DiffReal>> Object2d::get_points() const
 {
         if (components.size() != 1)
                 throw std::invalid_argument("must have a single component");
@@ -144,13 +144,9 @@ std::vector<std::tuple<double, double>> Object2d::get_points() const
 
         Polygon_2 polygon = components[0].outer_boundary();
 
-        std::vector<std::tuple<double, double>> result;
+        std::vector<std::tuple<DiffReal, DiffReal>> result;
         for (auto &v : polygon.container())
-        {
-                double x = CGAL::to_double(v.x());
-                double y = CGAL::to_double(v.y());
-                result.push_back({x, y});
-        }
+                result.push_back({v.x(), v.y()});
         return result;
 }
 
@@ -167,17 +163,17 @@ Object2d Object2d::transform(Aff_Transformation_2 trans) const
         return object;
 }
 
-Object2d Object2d::translate(double xdiff, double ydiff) const
+Object2d Object2d::translate(const DiffReal &xdiff, const DiffReal &ydiff) const
 {
         return transform(Aff_Transformation_2(CGAL::TRANSLATION, Vector_2(xdiff, ydiff)));
 }
 
-Object2d Object2d::rotate(double angle) const
+Object2d Object2d::rotate(const DiffReal &angle) const
 {
-        return transform(Aff_Transformation_2(CGAL::ROTATION, std::sin(angle), std::cos(angle)));
+        return transform(Aff_Transformation_2(CGAL::ROTATION, angle.sin(), angle.cos()));
 }
 
-Object2d Object2d::scale(double scale) const
+Object2d Object2d::scale(const DiffReal &scale) const
 {
         return transform(Aff_Transformation_2(CGAL::SCALING, scale));
 }

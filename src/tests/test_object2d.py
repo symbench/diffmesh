@@ -14,18 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from diffmesh import Object2d
+from diffmesh import Object2d, DiffReal
 
-r = Object2d.rectangle(10, 10)
-c = Object2d.circle(5)
+rwidth = DiffReal(10, [1, 0, 0, 0])
+rheight = DiffReal(10, [0, 1, 0, 0])
+cradius = DiffReal(5, [0, 0, 1, 0])
+angle = DiffReal(0.1, [0, 0, 0, 1])
+
+r = Object2d.rectangle(rwidth, rheight)
+c = Object2d.circle(cradius)
 
 s = Object2d()
-s = s.join(r.translate(6, 0))
-s = s.join(c.translate(0, 6))
-s = s.join(c.translate(-7, 0))
-s = s.join(r.translate(0, -7))
-s = s.difference(c.translate(12, -5))
-s = s.join(c.translate(13, -6))
-s = s.intersection(r.scale(2.0))
+s = s.join(r.translate(DiffReal(6), DiffReal(0)))
+s = s.join(c.translate(DiffReal(0), DiffReal(6)))
+s = s.join(c.translate(DiffReal(-7), DiffReal(0)))
+s = s.join(r.translate(DiffReal(0), DiffReal(-7)))
+s = s.difference(c.translate(DiffReal(12), DiffReal(-5)))
+s = s.join(c.translate(DiffReal(13), DiffReal(-6)))
+s = s.intersection(r.scale(DiffReal(2.0)).rotate(angle))
 
 s.plt_plot()

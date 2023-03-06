@@ -39,8 +39,9 @@ DiffReal DiffReal::operator-() const
 {
         DiffReal result;
         result.value = -value;
+        result.derivs.reserve(derivs.size());
         for (size_t i = 0; i < derivs.size(); i++)
-                result.derivs[i] = -derivs[i];
+                result.derivs.emplace_back(-derivs[i]);
         return result;
 }
 
@@ -120,6 +121,30 @@ DiffReal &DiffReal::operator/=(const DiffReal &other)
         for (std::size_t i = min_size; i < other.derivs.size(); i++)
                 derivs.emplace_back(-temp2 * other.derivs[i]);
         return *this;
+}
+
+DiffReal DiffReal::cos() const
+{
+        DiffReal result;
+        double temp1 = value.to_double();
+        result.value = std::cos(temp1);
+        Value temp2(-std::sin(temp1));
+        result.derivs.reserve(derivs.size());
+        for (size_t i = 0; i < derivs.size(); i++)
+                result.derivs.emplace_back(derivs[i] * temp2);
+        return result;
+}
+
+DiffReal DiffReal::sin() const
+{
+        DiffReal result;
+        double temp1 = value.to_double();
+        result.value = std::sin(temp1);
+        Value temp2(std::cos(temp1));
+        result.derivs.reserve(derivs.size());
+        for (size_t i = 0; i < derivs.size(); i++)
+                result.derivs.emplace_back(derivs[i] * temp2);
+        return result;
 }
 
 std::ostream &operator<<(std::ostream &out, const DiffReal &x)

@@ -57,6 +57,7 @@ public:
         bool operator>=(const DiffReal &other) const { return value >= other.value; }
 
         DiffReal operator-() const;
+        DiffReal operator+() const { return *this; }
 
         DiffReal operator+(const DiffReal &other) const;
         DiffReal operator-(const DiffReal &other) const;
@@ -67,6 +68,9 @@ public:
         DiffReal &operator-=(const DiffReal &other);
         DiffReal &operator*=(const DiffReal &other);
         DiffReal &operator/=(const DiffReal &other);
+
+        DiffReal cos() const;
+        DiffReal sin() const;
 };
 
 std::ostream &operator<<(std::ostream &out, const DiffReal &x);

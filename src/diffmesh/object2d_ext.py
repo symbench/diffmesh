@@ -23,11 +23,15 @@ def plt_path(object: 'Object2d') -> 'Path':
     points = []
     codes = []
 
+    def coord(pt):
+        return (pt[0].value(), pt[1].value())
+
     def addit(pts):
         assert len(pts) >= 3
-        points.extend(pts)
+        points.append(coord(pts[0]))
         codes.append(Path.MOVETO)
-        for i in range(len(pts) - 1):
+        for i in range(1, len(pts)):
+            points.append(coord(pts[i]))
             codes.append(Path.LINETO)
         points.append((0.0, 0.0))
         codes.append(Path.CLOSEPOLY)
