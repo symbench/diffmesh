@@ -20,6 +20,8 @@
 #ifndef DIFFREAL_HPP
 #define DIFFREAL_HPP
 
+#include <vector>
+
 #include <CGAL/Gmpq.h>
 #include <CGAL/number_type_basic.h>
 #include <CGAL/Coercion_traits.h>
@@ -27,20 +29,25 @@
 class DiffReal
 {
 public:
-        CGAL::Gmpq value;
+        typedef CGAL::Gmpq Value;
+
+        Value value;
+        std::vector<Value> derivs;
 
         DiffReal() {}
         DiffReal(double value) : value(value) {}
-        DiffReal(CGAL::Gmpq value) : value(value) {}
-        DiffReal(const DiffReal &other) : value(other.value) {}
-
-        double to_double() const { return CGAL::to_double(value); }
+        DiffReal(double value, std::vector<double> derivs);
+        DiffReal(const DiffReal &other) : value(other.value), derivs(other.derivs) {}
 
         DiffReal &operator=(const DiffReal &other)
         {
                 value = other.value;
+                derivs = other.derivs;
                 return *this;
         }
+
+        double get_value() const { return CGAL::to_double(value); }
+        std::vector<double> get_derivs() const;
 
         bool operator==(const DiffReal &other) const { return value == other.value; }
         bool operator!=(const DiffReal &other) const { return value != other.value; }
@@ -49,33 +56,17 @@ public:
         bool operator>(const DiffReal &other) const { return value > other.value; }
         bool operator>=(const DiffReal &other) const { return value >= other.value; }
 
-        DiffReal operator-() const { return -value; }
+        DiffReal operator-() const;
 
-        DiffReal operator+(const DiffReal &other) const { return value + other.value; }
-        DiffReal operator-(const DiffReal &other) const { return value - other.value; }
-        DiffReal operator*(const DiffReal &other) const { return value * other.value; }
-        DiffReal operator/(const DiffReal &other) const { return value / other.value; }
+        DiffReal operator+(const DiffReal &other) const;
+        DiffReal operator-(const DiffReal &other) const;
+        DiffReal operator*(const DiffReal &other) const;
+        DiffReal operator/(const DiffReal &other) const;
 
-        DiffReal &operator+=(const DiffReal &other)
-        {
-                value += other.value;
-                return *this;
-        }
-        DiffReal &operator-=(const DiffReal &other)
-        {
-                value -= other.value;
-                return *this;
-        }
-        DiffReal &operator*=(const DiffReal &other)
-        {
-                value *= other.value;
-                return *this;
-        }
-        DiffReal &operator/=(const DiffReal &other)
-        {
-                value /= other.value;
-                return *this;
-        }
+        DiffReal &operator+=(const DiffReal &other);
+        DiffReal &operator-=(const DiffReal &other);
+        DiffReal &operator*=(const DiffReal &other);
+        DiffReal &operator/=(const DiffReal &other);
 };
 
 std::ostream &operator<<(std::ostream &out, const DiffReal &x);

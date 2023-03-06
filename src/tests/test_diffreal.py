@@ -16,7 +16,26 @@
 
 from diffmesh import DiffReal
 
-a = DiffReal(1.0)
-b = DiffReal(2.0)
+a = DiffReal(2.0, [1.0, 0.0])
+print(a.value(), a.derivs())
+
+b = DiffReal(3.0, [1.0, -4.0])
+print(b.value(), b.derivs())
+
 c = a + b
-print(c.to_double())
+print(c.value(), c.derivs())
+
+d = a - b
+print(d.value(), d.derivs())
+
+e = a * b
+print(e.value(), e.derivs())
+
+f = a / b
+print(f.value(), f.derivs())
+
+g = DiffReal(1.0) / b
+print(g.value(), g.derivs())
+
+h = a * g
+print(h.value(), h.derivs())

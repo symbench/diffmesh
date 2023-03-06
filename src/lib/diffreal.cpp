@@ -19,12 +19,117 @@
 
 #include "diffreal.hpp"
 
+DiffReal::DiffReal(double value, std::vector<double> derivs) : value(value)
+{
+        this->derivs.reserve(derivs.size());
+        for (std::size_t i = 0; i < derivs.size(); i++)
+                this->derivs.emplace_back(derivs[i]);
+}
+
+std::vector<double> DiffReal::get_derivs() const
+{
+        std::vector<double> result;
+        result.reserve(derivs.size());
+        for (std::size_t i = 0; i < derivs.size(); i++)
+                result.emplace_back(CGAL::to_double(derivs[i]));
+        return result;
+}
+
+DiffReal DiffReal::operator-() const
+{
+        DiffReal result;
+        result.value = -value;
+        for (size_t i = 0; i < derivs.size(); i++)
+                result.derivs[i] = -derivs[i];
+        return result;
+}
+
+DiffReal DiffReal::operator+(const DiffReal &other) const
+{
+        DiffReal result(*this);
+        result += other;
+        return result;
+}
+
+DiffReal DiffReal::operator-(const DiffReal &other) const
+{
+        DiffReal result(*this);
+        result -= other;
+        return result;
+}
+
+DiffReal DiffReal::operator*(const DiffReal &other) const
+{
+        DiffReal result(*this);
+        result *= other;
+        return result;
+}
+
+DiffReal DiffReal::operator/(const DiffReal &other) const
+{
+        DiffReal result(*this);
+        result /= other;
+        return result;
+}
+
+DiffReal &DiffReal::operator+=(const DiffReal &other)
+{
+        value += other.value;
+        std::size_t min_size = std::min(derivs.size(), other.derivs.size());
+        for (std::size_t i = 0; i < min_size; i++)
+                derivs[i] += other.derivs[i];
+        for (std::size_t i = min_size; i < other.derivs.size(); i++)
+                derivs.emplace_back(other.derivs[i]);
+        return *this;
+}
+
+DiffReal &DiffReal::operator-=(const DiffReal &other)
+{
+        value -= other.value;
+        std::size_t min_size = std::min(derivs.size(), other.derivs.size());
+        for (std::size_t i = 0; i < min_size; i++)
+                derivs[i] -= other.derivs[i];
+        for (std::size_t i = min_size; i < other.derivs.size(); i++)
+                derivs.emplace_back(-other.derivs[i]);
+        return *this;
+}
+
+DiffReal &DiffReal::operator*=(const DiffReal &other)
+{
+        std::size_t min_size = std::min(derivs.size(), other.derivs.size());
+        for (std::size_t i = 0; i < derivs.size(); i++)
+                derivs[i] *= other.value;
+        for (std::size_t i = 0; i < min_size; i++)
+                derivs[i] += value * other.derivs[i];
+        for (std::size_t i = min_size; i < other.derivs.size(); i++)
+                derivs.emplace_back(value * other.derivs[i]);
+        value *= other.value;
+        return *this;
+}
+
+DiffReal &DiffReal::operator/=(const DiffReal &other)
+{
+        Value temp1 = Value(1.0) / other.value;
+        value *= temp1;
+        Value temp2 = value * temp1;
+        std::size_t min_size = std::min(derivs.size(), other.derivs.size());
+        for (std::size_t i = 0; i < derivs.size(); i++)
+                derivs[i] *= temp1;
+        for (std::size_t i = 0; i < min_size; i++)
+                derivs[i] -= temp2 * other.derivs[i];
+        for (std::size_t i = min_size; i < other.derivs.size(); i++)
+                derivs.emplace_back(-temp2 * other.derivs[i]);
+        return *this;
+}
+
 std::ostream &operator<<(std::ostream &out, const DiffReal &x)
 {
-        return (out << x.value);
+        out << x.value;
+        return out;
 }
 
 std::istream &operator>>(std::istream &in, DiffReal &x)
 {
-        return (in >> x.value);
+        in >> x.value;
+        return in;
 }
