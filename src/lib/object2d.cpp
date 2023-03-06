@@ -20,9 +20,8 @@
 #include "object2d.hpp"
 
 #include <sstream>
-#include <boost/multiprecision/mpfr.hpp>
-#include <boost/multiprecision/number.hpp>
 #include <CGAL/Polygon_set_2.h>
+#include <CGAL/Bbox_2.h>
 
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Vector_2<Kernel> Vector_2;
@@ -90,6 +89,15 @@ std::size_t Object2d::num_points() const
                         n += h.container().size();
         }
         return n;
+}
+
+std::tuple<double, double, double, double> Object2d::bbox() const
+{
+        CGAL::Bbox_2 bbox;
+        for (auto &c : components)
+                bbox += c.bbox();
+
+        return {bbox.xmin(), bbox.ymin(), bbox.xmax(), bbox.ymax()};
 }
 
 Object2d Object2d::get_component(std::size_t index) const

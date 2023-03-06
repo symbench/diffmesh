@@ -40,3 +40,20 @@ def plt_path(object: 'Object2d') -> 'Path':
             addit(obj.get_polygon(i).get_points()[::-1])
 
     return Path(points, codes)
+
+
+def plt_plot(object: 'Object2d'):
+    """
+    Plots the given object using matplotlib.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import PathPatch
+
+    path = object.plt_path()
+    xmin, ymin, xmax, ymax = object.bbox()
+
+    _, ax = plt.subplots()
+    ax.set_xlim(1.1 * xmin - 0.1 * xmax, 1.1 * xmax - 0.1 * xmin)
+    ax.set_ylim(1.1 * ymin - 0.1 * ymax, 1.1 * ymax - 0.1 * ymin)
+    ax.add_patch(PathPatch(path))
+    plt.show()

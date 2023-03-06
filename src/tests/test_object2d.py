@@ -16,10 +16,6 @@
 
 from diffmesh import Object2d
 
-import matplotlib.pyplot as plt
-from matplotlib.patches import PathPatch
-
-
 r = Object2d.rectangle(10, 10)
 c = Object2d.circle(5)
 
@@ -32,10 +28,4 @@ s = s.difference(c.translate(12, -5))
 s = s.join(c.translate(13, -6))
 s = s.intersection(r.scale(2.0))
 
-path = s.plt_path()
-
-_, ax = plt.subplots()
-ax.set_xlim(-30, 30)
-ax.set_ylim(-30, 30)
-ax.add_patch(PathPatch(path))
-plt.show()
+s.plt_plot()

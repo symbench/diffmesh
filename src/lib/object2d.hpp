@@ -45,6 +45,7 @@ public:
         std::size_t num_components() const;
         std::size_t num_polygons() const;
         std::size_t num_points() const;
+        std::tuple<double, double, double, double> bbox() const;
 
         Object2d get_component(std::size_t index) const;
         Object2d get_polygon(std::size_t index) const;
