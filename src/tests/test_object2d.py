@@ -83,6 +83,6 @@ _, ax = plt.subplots()
 xmin, ymin, xmax, ymax = s.bbox()
 ax.set_xlim(1.1 * xmin - 0.1 * xmax, 1.1 * xmax - 0.1 * xmin)
 ax.set_ylim(1.1 * ymin - 0.1 * ymax, 1.1 * ymax - 0.1 * ymin)
-for i in range(5, -1, -1):
-    ax.add_patch(PathPatch(plt_path(s, [0, 0, 0.1 * i, 0])))
+for i in range(-10, 0):
+    ax.add_patch(PathPatch(plt_path(s, [0, 0, 0, 0.01 * i]), facecolor='none'))
 plt.show()
