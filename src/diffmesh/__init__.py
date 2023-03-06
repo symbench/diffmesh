@@ -20,10 +20,15 @@ from ._diffmesh import (
     Mesh2d,
 )
 
-from .object2d_ext import plt_path, plt_arrows, plt_plot
-Object2d.plt_path = plt_path
-Object2d.plt_arrows = plt_arrows
-Object2d.plt_plot = plt_plot
+from . import object2d_ext
+from . import mesh2d_ext
+
+Object2d.plt_path = object2d_ext.plt_path
+Object2d.plt_arrows = object2d_ext.plt_arrows
+Object2d.plt_plot = object2d_ext.plt_plot
+
+Mesh2d.plt_triangulation = mesh2d_ext.plt_triangulation
+Mesh2d.plt_plot = mesh2d_ext.plt_plot
 
 __all__ = [
     "CGAL_VERSION_STR",

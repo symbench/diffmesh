@@ -36,6 +36,7 @@ s = s.join(c.translate(13, -6))
 s = s.intersection(r.scale(2.0).rotate(angle))
 
 _, ax = plt.subplots()
+ax.set_aspect('equal')
 xmin, ymin, xmax, ymax = s.bbox()
 ax.set_xlim(1.1 * xmin - 0.1 * xmax, 1.1 * xmax - 0.1 * xmin)
 ax.set_ylim(1.1 * ymin - 0.1 * ymax, 1.1 * ymax - 0.1 * ymin)

@@ -14,15 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import matplotlib.pyplot as plt
 from diffmesh import Object2d, DiffReal, Mesh2d
 
 width = DiffReal(10, [1, 0])
 height = DiffReal(10, [0, 1])
 
 r = Object2d.rectangle(width, height)
-r = r.join(r.translate(1, 1))
+r = r.join(r.rotate(0.2).translate(3, 0))
+r = r.difference(r.scale(0.5))
 
 m = Mesh2d(r)
-print(m.num_vertices(), m.num_faces())
-print(m.vertices())
-print(m.faces())
+m.plt_plot()

@@ -96,10 +96,11 @@ def plt_plot(object: 'Object2d'):
     import matplotlib.pyplot as plt
     from matplotlib.patches import PathPatch
 
-    path = object.plt_path()
+    path = plt_path(object)
     xmin, ymin, xmax, ymax = object.bbox()
 
     _, ax = plt.subplots()
+    ax.set_aspect('equal')
     ax.set_xlim(1.1 * xmin - 0.1 * xmax, 1.1 * xmax - 0.1 * xmin)
     ax.set_ylim(1.1 * ymin - 0.1 * ymax, 1.1 * ymax - 0.1 * ymin)
     ax.add_patch(PathPatch(path))
