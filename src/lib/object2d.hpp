@@ -52,8 +52,22 @@ public:
         std::vector<std::tuple<DiffReal, DiffReal>> get_points() const;
 
         Object2d translate(const DiffReal &xdiff, const DiffReal &ydiff) const;
+        Object2d translate(double xdiff, double ydiff) const
+        {
+                return translate(DiffReal(xdiff), DiffReal(ydiff));
+        }
+
         Object2d rotate(const DiffReal &angle) const;
+        Object2d rotate(double angle) const
+        {
+                return rotate(DiffReal(angle));
+        }
+
         Object2d scale(const DiffReal &scale) const;
+        Object2d scale(double scale) const
+        {
+                return this->scale(DiffReal(scale));
+        }
 
         Object2d join(const Object2d &other) const;
         Object2d intersection(const Object2d &other) const;

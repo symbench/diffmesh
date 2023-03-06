@@ -19,8 +19,9 @@ from ._diffmesh import (
     Object2d,
 )
 
-from .object2d_ext import plt_path, plt_plot
+from .object2d_ext import plt_path, plt_arrows, plt_plot
 Object2d.plt_path = plt_path
+Object2d.plt_arrows = plt_arrows
 Object2d.plt_plot = plt_plot
 
 __all__ = [

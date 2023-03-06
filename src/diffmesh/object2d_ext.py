@@ -13,7 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-def plt_path(object: 'Object2d') -> 'Path':
+from typing import List, Tuple
+
+
+def plt_path(object: 'Object2d', derivs: List[float] = []) -> 'Path':
     """
     Converts an object (multiple polygons with holes) to a
     matplotlib path object that can be displayed as a patch.
@@ -23,8 +26,14 @@ def plt_path(object: 'Object2d') -> 'Path':
     points = []
     codes = []
 
+    def value(x):
+        v = x.value()
+        for (a, b) in zip(derivs, x.derivs()):
+            v += a * b
+        return v
+
     def coord(pt):
-        return (pt[0].value(), pt[1].value())
+        return (value(pt[0]), value(pt[1]))
 
     def addit(pts):
         assert len(pts) >= 3
@@ -44,6 +53,40 @@ def plt_path(object: 'Object2d') -> 'Path':
             addit(obj.get_polygon(i).get_points()[::-1])
 
     return Path(points, codes)
+
+
+def plt_arrows(object: 'Object2d', derivs: List[float] = []) \
+        -> Tuple[List[float], List[float], List[float], List[float]]:
+    xs = []
+    ys = []
+    us = []
+    vs = []
+
+    def delta(x):
+        d = 0.0
+        for (a, b) in zip(derivs, x.derivs()):
+            d += a * b
+        return d
+
+    def arrow(pt):
+        xs.append(pt[0].value())
+        ys.append(pt[1].value())
+        us.append(delta(pt[0]))
+        vs.append(delta(pt[1]))
+
+    def addit(pts):
+        assert len(pts) >= 3
+        for pt in pts:
+            arrow(pt)
+
+    for i in range(object.num_components()):
+        obj = object.get_component(i)
+        assert obj.num_components() == 1
+        addit(obj.get_polygon(0).get_points())
+        for i in range(1, obj.num_polygons()):
+            addit(obj.get_polygon(i).get_points()[::-1])
+
+    return xs, ys, us, vs
 
 
 def plt_plot(object: 'Object2d'):
