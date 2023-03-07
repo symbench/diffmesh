@@ -22,17 +22,18 @@ def test1():
     length = DiffReal(3, [0, 1])
 
     object = Object2d.rectangle(length, diameter)
-    circle = Object2d.circle(diameter * DiffReal(0.5), segments=14)
+    circle = Object2d.circle(diameter * DiffReal(0.5))
     object = object.join(circle.translate(length * DiffReal(0.5), DiffReal(0)))
     object = object.join(circle.translate(
         length * DiffReal(-0.5), DiffReal(0)))
     object = Object2d.rectangle(DiffReal(15), DiffReal(10)).difference(object)
 
+    object = object.simplify()
     object.plt_plot([1, 0])
 
     mesh = Mesh2d(object)
-    mesh.refine_delaunay()
-    mesh.plt_plot([0, 0])
+    mesh.refine_delaunay(size_bound=1.0)
+    mesh.plt_plot([1, 0])
 
 
 def test2():
@@ -53,4 +54,4 @@ def test2():
     m.plt_plot([1.0, 0, 0, 0])
 
 
-test2()
+test1()

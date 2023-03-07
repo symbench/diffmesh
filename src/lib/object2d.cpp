@@ -21,14 +21,7 @@
 
 #include <sstream>
 #include <CGAL/Boolean_set_operations_2.h>
-#include <CGAL/Polygon_set_2.h>
 #include <CGAL/Bbox_2.h>
-
-typedef CGAL::Point_2<Kernel> Point_2;
-typedef CGAL::Vector_2<Kernel> Vector_2;
-typedef CGAL::Polygon_2<Kernel> Polygon_2;
-typedef CGAL::Polygon_set_2<Kernel> Polygon_set_2;
-typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 
 Object2d Object2d::polygon(const std::vector<std::tuple<DiffReal, DiffReal>> &points)
 {
@@ -225,6 +218,61 @@ Object2d Object2d::difference(const Object2d &other) const
         Object2d object;
         set1.polygons_with_holes(std::back_inserter(object.components));
         return object;
+}
+
+Object2d Object2d::simplify(double epsilon) const
+{
+        Polygon_set_2 set1;
+        for (auto &c : components)
+        {
+                Polygon_2 p = simplify2(c.outer_boundary(), epsilon);
+                if (p.is_empty())
+                        continue;
+
+                Polygon_set_2 set2;
+                set2.insert(p);
+
+                for (auto &h : c.holes())
+                        set2.difference(simplify2(h, epsilon));
+
+                set1.join(set2);
+        }
+
+        Object2d object;
+        set1.polygons_with_holes(std::back_inserter(object.components));
+        return object;
+}
+
+Object2d::Polygon_2 Object2d::simplify2(const Polygon_2 &polygon, double epsilon)
+{
+        epsilon *= epsilon;
+
+        std::vector<Point_2> points;
+        for (auto i = polygon.vertices_begin(); i != polygon.vertices_end(); ++i)
+        {
+                if (points.empty())
+                {
+                        points.push_back(*i);
+                        continue;
+                }
+
+                auto d = CGAL::squared_distance(*i, points.back());
+                if (CGAL::to_double(d) >= epsilon)
+                        points.push_back(*i);
+        }
+
+        while (points.size() >= 3)
+        {
+                auto d = CGAL::squared_distance(points.front(), points.back());
+                if (CGAL::to_double(d) >= epsilon)
+                        break;
+
+                points.pop_back();
+        }
+        if (points.size() < 3)
+                points.clear();
+
+        return Polygon_2(points.begin(), points.end());
 }
 
 int Object2d::contains(const DiffReal &xpos, const DiffReal &ypos) const

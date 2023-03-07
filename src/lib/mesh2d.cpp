@@ -25,7 +25,7 @@
 
 Mesh2d::Mesh2d(const Object2d &object)
 {
-        const std::vector<Polygon_with_holes_2> &components = object.get_components();
+        const std::vector<Object2d::Polygon_with_holes_2> &components = object.components;
         for (auto &c : components)
         {
                 auto &p = c.outer_boundary();

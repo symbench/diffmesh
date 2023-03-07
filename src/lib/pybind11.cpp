@@ -76,6 +76,7 @@ PYBIND11_MODULE(_diffmesh, m)
         .def("join", &Object2d::join, py::arg("other"))
         .def("intersection", &Object2d::intersection, py::arg("other"))
         .def("difference", &Object2d::difference, py::arg("other"))
+        .def("simplify", &Object2d::simplify, py::arg("epsilon") = 0.001)
         .def("contains", &Object2d::contains, py::arg("xpos"), py::arg("ypos"))
         .def("__repr__", &Object2d::repr);
 

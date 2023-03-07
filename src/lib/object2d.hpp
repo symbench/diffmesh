@@ -25,11 +25,9 @@
 #include <vector>
 #include <tuple>
 
+#include <CGAL/Polygon_set_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/Aff_transformation_2.h>
-
-typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
-typedef CGAL::Aff_transformation_2<Kernel> Aff_Transformation_2;
 
 class Object2d
 {
@@ -68,20 +66,26 @@ public:
         Object2d join(const Object2d &other) const;
         Object2d intersection(const Object2d &other) const;
         Object2d difference(const Object2d &other) const;
+        Object2d simplify(double epsilon = 0.001) const;
 
         int contains(const DiffReal &xpos, const DiffReal &ypos) const;
 
         std::string repr() const;
 
-        const std::vector<Polygon_with_holes_2> &get_components() const
-        {
-                return components;
-        }
-
 protected:
+        typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
+        typedef CGAL::Aff_transformation_2<Kernel> Aff_Transformation_2;
+        typedef CGAL::Point_2<Kernel> Point_2;
+        typedef CGAL::Vector_2<Kernel> Vector_2;
+        typedef CGAL::Polygon_2<Kernel> Polygon_2;
+        typedef CGAL::Polygon_set_2<Kernel> Polygon_set_2;
+
         Object2d transform(Aff_Transformation_2 trans) const;
+        static Polygon_2 simplify2(const Polygon_2 &polygon, double epsilon);
 
         std::vector<Polygon_with_holes_2> components;
+
+        friend class Mesh2d;
 };
 
 #endif // OBJECT2D_HPP
