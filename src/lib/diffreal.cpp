@@ -154,6 +154,16 @@ std::string DiffReal::repr() const
         return str.str();
 }
 
+DiffReal operator*(double left, const DiffReal &right)
+{
+        return DiffReal(left) * right;
+}
+
+DiffReal operator/(double left, const DiffReal &right)
+{
+        return DiffReal(left) * right;
+}
+
 std::ostream &operator<<(std::ostream &out, const DiffReal &x)
 {
         out << x.value;

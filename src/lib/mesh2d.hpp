@@ -35,13 +35,16 @@ typedef CGAL::Delaunay_mesh_vertex_base_2<Kernel> Delaunay_mesh_vertex_base_2;
 typedef CGAL::Delaunay_mesh_face_base_2<Kernel> Delaunay_mesh_face_base_2;
 typedef CGAL::Triangulation_data_structure_2<Delaunay_mesh_vertex_base_2, Delaunay_mesh_face_base_2>
     Triangulation_data_structure_2;
-typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, Triangulation_data_structure_2>
+typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, Triangulation_data_structure_2, CGAL::No_constraint_intersection_tag>
     Constrained_Delaunay_triangulation_2;
 
 class Mesh2d
 {
 public:
         Mesh2d(const Object2d &object);
+
+        void refine_delaunay(double aspect_bound = 0.125, double size_bound = 0.0);
+        void lloyd_optimize(int max_iteration_number = 0);
 
         std::size_t num_vertices() const { return triangulation.number_of_vertices(); }
         std::size_t num_faces() const { return triangulation.number_of_faces(); }

@@ -20,8 +20,12 @@
 #include "mesh2d.hpp"
 
 #include <map>
+#include <CGAL/Delaunay_mesh_size_criteria_2.h>
+#include <CGAL/lloyd_optimize_mesh_2.h>
 
 typedef Constrained_Delaunay_triangulation_2::Vertex_handle Vertex_handle;
+typedef CGAL::Delaunay_mesh_size_criteria_2<Constrained_Delaunay_triangulation_2>
+    Delaunay_mesh_size_criteria_2;
 
 Mesh2d::Mesh2d(const Object2d &object)
 {
@@ -33,6 +37,20 @@ Mesh2d::Mesh2d(const Object2d &object)
                 for (auto &p : c.holes())
                         triangulation.insert_constraint(p.vertices_begin(), p.vertices_end(), true);
         }
+}
+
+void Mesh2d::refine_delaunay(double aspect_bound, double size_bound)
+{
+        CGAL::refine_Delaunay_mesh_2(
+            triangulation, Delaunay_mesh_size_criteria_2(
+                               aspect_bound = aspect_bound,
+                               size_bound = size_bound));
+}
+
+void Mesh2d::lloyd_optimize(int max_iteration_number)
+{
+        throw std::logic_error("not implemented");
+        // CGAL::lloyd_optimize_mesh_2(triangulation, CGAL::parameters::max_iteration_number = max_iteration_number);
 }
 
 std::vector<std::tuple<DiffReal, DiffReal>> Mesh2d::vertices() const

@@ -80,6 +80,8 @@ PYBIND11_MODULE(_diffmesh, m)
 
     py::class_<Mesh2d, std::shared_ptr<Mesh2d>>(m, "Mesh2d")
         .def(py::init<const Object2d &>(), py::arg("object"))
+        .def("refine_delaunay", &Mesh2d::refine_delaunay, py::arg("aspect_bound") = 0.125, py::arg("size_bound") = 0.0)
+        .def("lloyd_optimize", &Mesh2d::lloyd_optimize, py::arg("max_iteration_number") = 0)
         .def("num_vertices", &Mesh2d::num_vertices)
         .def("num_faces", &Mesh2d::num_faces)
         .def("vertices", &Mesh2d::vertices)

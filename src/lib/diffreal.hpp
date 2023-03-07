@@ -76,6 +76,9 @@ public:
         std::string repr() const;
 };
 
+DiffReal operator*(double left, const DiffReal &right);
+DiffReal operator/(double left, const DiffReal &right);
+
 std::ostream &operator<<(std::ostream &out, const DiffReal &x);
 std::istream &operator>>(std::istream &in, DiffReal &x);
 

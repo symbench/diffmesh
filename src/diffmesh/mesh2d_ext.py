@@ -51,5 +51,5 @@ def plt_plot(mesh: 'Mesh2d'):
     ax.tripcolor(triangles,
                  facecolors=[0.3] * len(triangles.triangles),
                  vmin=0.0, vmax=1.0, alpha=0.2)
-    ax.triplot(triangles, 'bo-', lw=1.0)
+    ax.triplot(triangles, 'b.-', lw=1.0)
     plt.show()
