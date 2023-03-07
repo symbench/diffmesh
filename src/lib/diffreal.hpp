@@ -33,11 +33,11 @@ public:
         typedef CGAL::Gmpq Value;
 
         Value value;
-        std::vector<Value> derivs;
+        std::vector<double> derivs;
 
         DiffReal() {}
         DiffReal(double value) : value(value) {}
-        DiffReal(double value, std::vector<double> derivs);
+        DiffReal(double value, std::vector<double> derivs) : value(value), derivs(derivs) {}
         DiffReal(const DiffReal &other) : value(other.value), derivs(other.derivs) {}
 
         DiffReal &operator=(const DiffReal &other)

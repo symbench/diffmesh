@@ -19,13 +19,6 @@
 
 #include "diffreal.hpp"
 
-DiffReal::DiffReal(double value, std::vector<double> derivs) : value(value)
-{
-        this->derivs.reserve(derivs.size());
-        for (std::size_t i = 0; i < derivs.size(); i++)
-                this->derivs.emplace_back(derivs[i]);
-}
-
 std::vector<double> DiffReal::get_derivs() const
 {
         std::vector<double> result;
@@ -97,22 +90,24 @@ DiffReal &DiffReal::operator-=(const DiffReal &other)
 
 DiffReal &DiffReal::operator*=(const DiffReal &other)
 {
+        double temp1 = CGAL::to_double(other.value);
+        double temp2 = CGAL::to_double(value);
+        value *= other.value;
         std::size_t min_size = std::min(derivs.size(), other.derivs.size());
         for (std::size_t i = 0; i < derivs.size(); i++)
-                derivs[i] *= other.value;
+                derivs[i] *= temp1;
         for (std::size_t i = 0; i < min_size; i++)
-                derivs[i] += value * other.derivs[i];
+                derivs[i] += temp2 * other.derivs[i];
         for (std::size_t i = min_size; i < other.derivs.size(); i++)
-                derivs.emplace_back(value * other.derivs[i]);
-        value *= other.value;
+                derivs.emplace_back(temp2 * other.derivs[i]);
         return *this;
 }
 
 DiffReal &DiffReal::operator/=(const DiffReal &other)
 {
-        Value temp1 = Value(1.0) / other.value;
-        value *= temp1;
-        Value temp2 = value * temp1;
+        double temp1 = 1.0 / CGAL::to_double(other.value);
+        double temp2 = CGAL::to_double(value) * temp1 * temp1;
+        value /= other.value;
         std::size_t min_size = std::min(derivs.size(), other.derivs.size());
         for (std::size_t i = 0; i < derivs.size(); i++)
                 derivs[i] *= temp1;
@@ -126,9 +121,9 @@ DiffReal &DiffReal::operator/=(const DiffReal &other)
 DiffReal DiffReal::cos() const
 {
         DiffReal result;
-        double temp1 = value.to_double();
+        double temp1 = CGAL::to_double(value);
         result.value = std::cos(temp1);
-        Value temp2(-std::sin(temp1));
+        double temp2 = -std::sin(temp1);
         result.derivs.reserve(derivs.size());
         for (size_t i = 0; i < derivs.size(); i++)
                 result.derivs.emplace_back(derivs[i] * temp2);
@@ -138,9 +133,9 @@ DiffReal DiffReal::cos() const
 DiffReal DiffReal::sin() const
 {
         DiffReal result;
-        double temp1 = value.to_double();
+        double temp1 = CGAL::to_double(value);
         result.value = std::sin(temp1);
-        Value temp2(std::cos(temp1));
+        double temp2 = std::cos(temp1);
         result.derivs.reserve(derivs.size());
         for (size_t i = 0; i < derivs.size(); i++)
                 result.derivs.emplace_back(derivs[i] * temp2);
