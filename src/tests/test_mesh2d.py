@@ -20,13 +20,24 @@ width = DiffReal(10, [1, 0])
 height = DiffReal(10, [0, 1])
 
 r = Object2d.rectangle(width, height)
-s = r.join(r.rotate(0.4).translate(2, 0))
-s = s.difference(Object2d.circle(DiffReal(3.0), 30))
+s = r.difference(r.scale(0.5))
+s = s.join(s.rotate(0.4))
+# s = r.join(r.rotate(0.4).translate(2, 0))
+# s = s.difference(Object2d.circle(DiffReal(3.0), 30))
+# s = r
 s.plt_plot()
 
 m = Mesh2d(s)
 print("refining")
-m.refine_delaunay()
-print("plotting")
+# m.refine_delaunay()
+# print("plotting")
 # m.lloyd_optimize()
+
+# print(m.vertices())
+# print(m.faces())
+m.plt_plot()
+
+m.refine_delaunay(size_bound=2.0)
+# print(m.vertices())
+# print(m.faces())
 m.plt_plot()

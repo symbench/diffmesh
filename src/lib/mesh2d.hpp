@@ -27,11 +27,21 @@
 #include <tuple>
 
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Triangulation_vertex_base_with_info_2.h>
+#include <CGAL/Triangulation_face_base_with_info_2.h>
 #include <CGAL/Delaunay_mesher_2.h>
 #include <CGAL/Delaunay_mesh_face_base_2.h>
 #include <CGAL/Delaunay_mesh_vertex_base_2.h>
 
-typedef CGAL::Delaunay_mesh_vertex_base_2<Kernel> Delaunay_mesh_vertex_base_2;
+struct VertexInfo
+{
+    std::size_t index;
+};
+
+typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo, Kernel>
+    Triangulation_vertex_base_with_info_2;
+typedef CGAL::Delaunay_mesh_vertex_base_2<Kernel, Triangulation_vertex_base_with_info_2>
+    Delaunay_mesh_vertex_base_2;
 typedef CGAL::Delaunay_mesh_face_base_2<Kernel> Delaunay_mesh_face_base_2;
 typedef CGAL::Triangulation_data_structure_2<Delaunay_mesh_vertex_base_2, Delaunay_mesh_face_base_2>
     Triangulation_data_structure_2;
@@ -41,19 +51,22 @@ typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, Triangulation_data_st
 class Mesh2d
 {
 public:
-        Mesh2d(const Object2d &object);
+    Mesh2d(const Object2d &object);
 
-        void refine_delaunay(double aspect_bound = 0.125, double size_bound = 0.0);
-        void lloyd_optimize(int max_iteration_number = 0);
+    void refine_delaunay(double aspect_bound = 0.125, double size_bound = 0.0);
+    void lloyd_optimize(int max_iteration_number = 0);
 
-        std::size_t num_vertices() const { return triangulation.number_of_vertices(); }
-        std::size_t num_faces() const { return triangulation.number_of_faces(); }
+    std::size_t num_vertices() const { return triangulation.number_of_vertices(); }
+    std::size_t num_faces() const { return triangulation.number_of_faces(); }
 
-        std::vector<std::tuple<DiffReal, DiffReal>> vertices() const;
-        std::vector<std::tuple<std::size_t, std::size_t, std::size_t>> faces() const;
+    std::vector<std::tuple<DiffReal, DiffReal>> vertices() const;
+    std::vector<std::tuple<std::size_t, std::size_t, std::size_t>> faces() const;
 
 protected:
-        Constrained_Delaunay_triangulation_2 triangulation;
+    void set_extra_info();
+
+    Constrained_Delaunay_triangulation_2 triangulation;
+    std::vector<CGAL::Point_2<Kernel>> seeds;
 };
 
 #endif // MESH2D_HPP

@@ -20,6 +20,7 @@
 #include "object2d.hpp"
 
 #include <sstream>
+#include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Polygon_set_2.h>
 #include <CGAL/Bbox_2.h>
 
@@ -224,6 +225,20 @@ Object2d Object2d::difference(const Object2d &other) const
         Object2d object;
         set1.polygons_with_holes(std::back_inserter(object.components));
         return object;
+}
+
+int Object2d::contains(const DiffReal &xpos, const DiffReal &ypos) const
+{
+        Point_2 p(xpos, ypos);
+        for (auto &c : components)
+        {
+                auto r = CGAL::oriented_side(p, c);
+                if (r == CGAL::ON_POSITIVE_SIDE)
+                        return 1;
+                else if (r == CGAL::ON_ORIENTED_BOUNDARY)
+                        return 0;
+        }
+        return -1;
 }
 
 std::string Object2d::repr() const

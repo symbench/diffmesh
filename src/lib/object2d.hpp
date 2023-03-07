@@ -69,6 +69,8 @@ public:
         Object2d intersection(const Object2d &other) const;
         Object2d difference(const Object2d &other) const;
 
+        int contains(const DiffReal &xpos, const DiffReal &ypos) const;
+
         std::string repr() const;
 
         const std::vector<Polygon_with_holes_2> &get_components() const
