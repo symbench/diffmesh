@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import List, Tuple
 
 
 def plt_triangulation(mesh: 'Mesh2d', derivs: List[float] = []) -> 'Triangulation':
@@ -38,9 +38,35 @@ def plt_triangulation(mesh: 'Mesh2d', derivs: List[float] = []) -> 'Triangulatio
     return Triangulation(xs, ys, mesh.faces())
 
 
-def plt_plot(mesh: 'Mesh2d'):
+def plt_arrows(mesh: 'Mesh2d', derivs: List[float] = []) \
+        -> Tuple[List[float], List[float], List[float], List[float]]:
+    xs = []
+    ys = []
+    us = []
+    vs = []
+
+    def delta(x):
+        d = 0.0
+        for (a, b) in zip(derivs, x.derivs()):
+            d += a * b
+        return d
+
+    def arrow(v):
+        xs.append(v[0].value())
+        ys.append(v[1].value())
+        us.append(delta(v[0]))
+        vs.append(delta(v[1]))
+
+    for v in mesh.vertices():
+        arrow(v)
+
+    return xs, ys, us, vs
+
+
+def plt_plot(mesh: 'Mesh2d', derivs: None | List[float] = None):
     """
-    Plots the given mesh using matplotlib.
+    Plots the given mesh using matplotlib. If derivs are specified
+    the the partial derivatives are plotted as arrows.
     """
     import matplotlib.pyplot as plt
 
@@ -52,4 +78,8 @@ def plt_plot(mesh: 'Mesh2d'):
                  facecolors=[0.3] * len(triangles.triangles),
                  vmin=0.0, vmax=1.0, alpha=0.2)
     ax.triplot(triangles, 'b.-', lw=1.0)
+    if derivs is not None:
+        xs, ys, us, vs = plt_arrows(mesh, derivs)
+        ax.quiver(xs, ys, us, vs, angles='xy', scale=1.0,
+                  units='xy')
     plt.show()

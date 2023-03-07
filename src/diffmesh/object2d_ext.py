@@ -89,9 +89,10 @@ def plt_arrows(object: 'Object2d', derivs: List[float] = []) \
     return xs, ys, us, vs
 
 
-def plt_plot(object: 'Object2d'):
+def plt_plot(object: 'Object2d', derivs: None | List[float] = None):
     """
-    Plots the given object using matplotlib.
+    Plots the given object using matplotlib. If derivs are specified
+    the the partial derivatives are plotted as arrows.
     """
     import matplotlib.pyplot as plt
     from matplotlib.patches import PathPatch
@@ -104,4 +105,8 @@ def plt_plot(object: 'Object2d'):
     ax.set_xlim(1.1 * xmin - 0.1 * xmax, 1.1 * xmax - 0.1 * xmin)
     ax.set_ylim(1.1 * ymin - 0.1 * ymax, 1.1 * ymax - 0.1 * ymin)
     ax.add_patch(PathPatch(path))
+    if derivs is not None:
+        xs, ys, us, vs = plt_arrows(object, derivs)
+        ax.quiver(xs, ys, us, vs, angles='xy', scale=1.0,
+                  units='xy')
     plt.show()

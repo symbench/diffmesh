@@ -28,6 +28,7 @@ Object2d.plt_arrows = object2d_ext.plt_arrows
 Object2d.plt_plot = object2d_ext.plt_plot
 
 Mesh2d.plt_triangulation = mesh2d_ext.plt_triangulation
+Mesh2d.plt_arrows = mesh2d_ext.plt_arrows
 Mesh2d.plt_plot = mesh2d_ext.plt_plot
 
 __all__ = [

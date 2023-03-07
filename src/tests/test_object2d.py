@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import matplotlib.pyplot as plt
-from matplotlib.patches import PathPatch
 from diffmesh import Object2d, DiffReal
 
 rwidth = DiffReal(10, [1, 0, 0, 0])
@@ -35,13 +33,4 @@ s = s.difference(c.translate(12, -5))
 s = s.join(c.translate(13, -6))
 s = s.intersection(r.scale(2.0).rotate(angle))
 
-_, ax = plt.subplots()
-ax.set_aspect('equal')
-xmin, ymin, xmax, ymax = s.bbox()
-ax.set_xlim(1.1 * xmin - 0.1 * xmax, 1.1 * xmax - 0.1 * xmin)
-ax.set_ylim(1.1 * ymin - 0.1 * ymax, 1.1 * ymax - 0.1 * ymin)
-ax.add_patch(PathPatch(s.plt_path()))
-xs, ys, us, vs = s.plt_arrows([0.0, 0.0, 1.0, 0.0])
-ax.quiver(xs, ys, us, vs, angles='xy', scale=1.0,
-          units='xy', headwidth=2.0)
-plt.show()
+s.plt_plot([0.0, 0.0, 1.0, 0.0])
