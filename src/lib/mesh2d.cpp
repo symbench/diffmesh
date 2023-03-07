@@ -21,14 +21,7 @@
 
 #include <map>
 #include <CGAL/Triangulation_conformer_2.h>
-#include <CGAL/Delaunay_mesh_size_criteria_2.h>
 #include <CGAL/lloyd_optimize_mesh_2.h>
-
-typedef Constrained_Delaunay_triangulation_2::Vertex_handle Vertex_handle;
-typedef Constrained_Delaunay_triangulation_2::Face_handle Face_handle;
-typedef Constrained_Delaunay_triangulation_2::Edge Edge;
-typedef CGAL::Delaunay_mesh_size_criteria_2<Constrained_Delaunay_triangulation_2>
-    Delaunay_mesh_size_criteria_2;
 
 Mesh2d::Mesh2d(const Object2d &object)
 {
@@ -51,6 +44,8 @@ Mesh2d::Mesh2d(const Object2d &object)
                 if (object.contains(c.x(), c.y()) < 0)
                         seeds.push_back(c);
         }
+
+        set_extra_info();
 }
 
 void Mesh2d::refine_delaunay(double aspect_bound, double size_bound)
@@ -59,6 +54,8 @@ void Mesh2d::refine_delaunay(double aspect_bound, double size_bound)
             triangulation,
             seeds.begin(), seeds.end(),
             Delaunay_mesh_size_criteria_2(aspect_bound = aspect_bound, size_bound = size_bound));
+
+        set_extra_info();
 }
 
 void Mesh2d::lloyd_optimize(int max_iteration_number)
@@ -67,100 +64,100 @@ void Mesh2d::lloyd_optimize(int max_iteration_number)
         // CGAL::lloyd_optimize_mesh_2(triangulation, CGAL::parameters::max_iteration_number = max_iteration_number);
 }
 
-void set_face_info2(Constrained_Delaunay_triangulation_2 &triangulation,
-                    Face_handle face, int level, std::vector<Edge> &border)
-{
-        /*
-                std::vector<Face_handle> faces;
-                faces.push_back(face);
-
-                while (!faces.empty())
-                {
-                        face = faces.back();
-                        faces.pop_back();
-                        if (face->info().level >= 0)
-                                continue;
-
-                        face->info().level = level;
-                        for (int i = 0; i < 3; i++)
-                        {
-                                Edge edge(face, i);
-                                Face_handle next = face->neighbor(i);
-                        }
-                }
-        */
-}
-
 void Mesh2d::set_extra_info()
 {
-        /*
-                for (auto &f : triangulation.all_face_handles())
-                        f->info().level = -1;
+        for (auto &v : triangulation.all_vertex_handles())
+                v->info().index = UNSET;
 
-                Face_handle face = triangulation.infinite_face();
-                face->info().level = 0;
-                std::vector<Face_handle> faces;
-                faces.push_back(face);
+        for (auto &f : triangulation.all_face_handles())
+                f->info().depth = UNSET;
 
-                while (!faces.empty())
+        d_num_vertices = 0;
+        d_num_faces = 0;
+
+        std::vector<Face_handle> faces;
+        Face_handle face = triangulation.infinite_face();
+        face->info().depth = 0;
+        faces.push_back(face);
+
+        while (!faces.empty())
+        {
+                face = faces.back();
+                faces.pop_back();
+
+                for (int i = 0; i < 3; i++)
                 {
-                        face = faces.back();
-                        faces.pop_back();
+                        Face_handle next = face->neighbor(i);
+                        if (next->info().depth != UNSET)
+                                continue;
 
-                        for (int i = 0; i < 0; i++)
+                        bool constrained = triangulation.is_constrained(Edge(face, i));
+                        next->info().depth = face->info().depth + constrained;
+                        faces.push_back(next);
+
+                        if (!next->info().inside())
+                                continue;
+
+                        d_num_faces += 1;
+                        for (int j = 0; j < 3; j++)
                         {
-                                Face_handle next = face->neighbor(i);
-                                if (next->info().level >= 0)
-                                        continue;
+                                auto &info = next->vertex(j)->info();
+                                if (info.index == UNSET)
+                                        info.index = d_num_vertices++;
                         }
                 }
+        }
 
-                std::vector<Edge> border;
-                set_face_info2(triangulation, triangulation.infinite_face(), 0, border);
-                while (!border.empty())
+        if (false)
+        {
+                std::cout << "vertices " << d_num_vertices << std::endl;
+                for (auto &v : triangulation.all_vertex_handles())
+                        std::cout << v->info().index << std::endl;
+
+                std::cout << "faces " << d_num_faces << std::endl;
+                for (auto &f : triangulation.all_face_handles())
                 {
-                        Edge edge = border.back();
-                        border.pop_back();
-                        Face_handle face = edge.first->neighbor(edge.second);
-                        set_face_info2(triangulation, face, edge.first->info().level + 1, border);
+                        auto v0 = f->vertex(0)->info().index;
+                        auto v1 = f->vertex(1)->info().index;
+                        auto v2 = f->vertex(2)->info().index;
+                        std::cout << f->info().depth << " " << v0 << " " << v1 << " " << v2 << std::endl;
                 }
-
-                std::size_t index = 0;
-                for (auto &v : triangulation.finite_vertex_handles())
-                        v->info().index = index++;
-        */
+        }
 }
 
 std::vector<std::tuple<DiffReal, DiffReal>> Mesh2d::vertices() const
 {
-        std::vector<std::tuple<DiffReal, DiffReal>> result;
-        result.reserve(triangulation.number_of_vertices());
-        for (auto &v : triangulation.finite_vertex_handles())
+        std::size_t count = 0;
+        std::vector<std::tuple<DiffReal, DiffReal>> result(d_num_vertices);
+        for (auto &v : triangulation.all_vertex_handles())
         {
-                assert(v->info().index == result.size());
-                auto &p = v->point();
-                result.emplace_back(p.x(), p.y());
+                std::size_t index = v->info().index;
+                if (index < d_num_vertices)
+                {
+                        auto p = v->point();
+                        result[index] = {p.x(), p.y()};
+                        count += 1;
+                }
         }
+        assert(count == d_num_vertices);
         return result;
 }
 
 std::vector<std::tuple<std::size_t, std::size_t, std::size_t>> Mesh2d::faces() const
 {
-        std::map<Vertex_handle, std::size_t> vertex_index;
-        for (auto &v : triangulation.finite_vertex_handles())
-        {
-                std::size_t i = vertex_index.size();
-                vertex_index[v] = i;
-        }
-
         std::vector<std::tuple<std::size_t, std::size_t, std::size_t>> result;
-        result.reserve(triangulation.number_of_faces());
-        for (auto &f : triangulation.finite_face_handles())
+        result.reserve(d_num_faces);
+        for (auto &f : triangulation.all_face_handles())
         {
-                auto v0 = vertex_index[f->vertex(0)];
-                auto v1 = vertex_index[f->vertex(1)];
-                auto v2 = vertex_index[f->vertex(2)];
+                if (!f->info().inside())
+                        continue;
+
+                auto v0 = f->vertex(0)->info().index;
+                auto v1 = f->vertex(1)->info().index;
+                auto v2 = f->vertex(2)->info().index;
                 result.emplace_back(v0, v1, v2);
         }
+
+        assert(result.size() == d_num_faces);
         return result;
 }

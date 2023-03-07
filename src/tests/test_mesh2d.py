@@ -16,28 +16,20 @@
 
 from diffmesh import Object2d, DiffReal, Mesh2d
 
-width = DiffReal(10, [1, 0])
-height = DiffReal(10, [0, 1])
+width = DiffReal(10, [1, 0, 0, 0])
+height = DiffReal(10, [0, 1, 0, 0])
+scale = DiffReal(0.5, [0, 0, 1, 0])
+angle = DiffReal(0.5, [0, 0, 0, 1])
 
 r = Object2d.rectangle(width, height)
-s = r.difference(r.scale(0.5))
-s = s.join(s.rotate(0.4))
-# s = r.join(r.rotate(0.4).translate(2, 0))
-# s = s.difference(Object2d.circle(DiffReal(3.0), 30))
-# s = r
+s = r.difference(r.scale(scale))
+s = s.join(s.rotate(angle))
 s.plt_plot()
 
 m = Mesh2d(s)
-print("refining")
-# m.refine_delaunay()
-# print("plotting")
-# m.lloyd_optimize()
-
-# print(m.vertices())
-# print(m.faces())
+print(m.vertices())
+print(m.faces())
 m.plt_plot()
 
-m.refine_delaunay(size_bound=2.0)
-# print(m.vertices())
-# print(m.faces())
+m.refine_delaunay(size_bound=1.5)
 m.plt_plot()

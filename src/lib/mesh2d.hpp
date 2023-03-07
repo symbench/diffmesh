@@ -25,28 +25,16 @@
 
 #include <vector>
 #include <tuple>
+#include <limits>
 
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Constrained_Delaunay_triangulation_face_base_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
 #include <CGAL/Delaunay_mesher_2.h>
 #include <CGAL/Delaunay_mesh_face_base_2.h>
 #include <CGAL/Delaunay_mesh_vertex_base_2.h>
-
-struct VertexInfo
-{
-    std::size_t index;
-};
-
-typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo, Kernel>
-    Triangulation_vertex_base_with_info_2;
-typedef CGAL::Delaunay_mesh_vertex_base_2<Kernel, Triangulation_vertex_base_with_info_2>
-    Delaunay_mesh_vertex_base_2;
-typedef CGAL::Delaunay_mesh_face_base_2<Kernel> Delaunay_mesh_face_base_2;
-typedef CGAL::Triangulation_data_structure_2<Delaunay_mesh_vertex_base_2, Delaunay_mesh_face_base_2>
-    Triangulation_data_structure_2;
-typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, Triangulation_data_structure_2, CGAL::No_constraint_intersection_tag>
-    Constrained_Delaunay_triangulation_2;
+#include <CGAL/Delaunay_mesh_size_criteria_2.h>
 
 class Mesh2d
 {
@@ -57,16 +45,59 @@ public:
     void lloyd_optimize(int max_iteration_number = 0);
 
     std::size_t num_vertices() const { return triangulation.number_of_vertices(); }
-    std::size_t num_faces() const { return triangulation.number_of_faces(); }
+    std::size_t num_faces() const { return d_num_faces; }
 
     std::vector<std::tuple<DiffReal, DiffReal>> vertices() const;
     std::vector<std::tuple<std::size_t, std::size_t, std::size_t>> faces() const;
 
 protected:
+    static const std::size_t UNSET = std::numeric_limits<std::size_t>::max();
+
+    struct VertexInfo
+    {
+        std::size_t index;
+    };
+
+    struct FaceInfo
+    {
+        std::size_t depth;
+
+        bool inside() const { return depth != UNSET && depth % 2 == 1; }
+    };
+
+    typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo, Kernel>
+        Triangulation_vertex_base_with_info_2;
+    typedef CGAL::Delaunay_mesh_vertex_base_2<Kernel, Triangulation_vertex_base_with_info_2>
+        Delaunay_mesh_vertex_base_2;
+
+    typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo, Kernel>
+        Triangulation_face_base_with_info_2;
+    typedef CGAL::Constrained_triangulation_face_base_2<Kernel, Triangulation_face_base_with_info_2>
+        Constrained_triangulation_face_base_2;
+    typedef CGAL::Constrained_Delaunay_triangulation_face_base_2<Kernel, Constrained_triangulation_face_base_2>
+        Constrained_Delaunay_triangulation_face_base_2;
+    typedef CGAL::Delaunay_mesh_face_base_2<Kernel, Constrained_Delaunay_triangulation_face_base_2>
+        Delaunay_mesh_face_base_2;
+
+    typedef CGAL::Triangulation_data_structure_2<Delaunay_mesh_vertex_base_2, Delaunay_mesh_face_base_2>
+        Triangulation_data_structure_2;
+    typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel, Triangulation_data_structure_2, CGAL::No_constraint_intersection_tag>
+        Constrained_Delaunay_triangulation_2;
+
+    typedef CGAL::Point_2<Kernel> Point_2;
+    typedef Constrained_Delaunay_triangulation_2::Vertex_handle Vertex_handle;
+    typedef Constrained_Delaunay_triangulation_2::Face_handle Face_handle;
+    typedef Constrained_Delaunay_triangulation_2::Edge Edge;
+    typedef CGAL::Delaunay_mesh_size_criteria_2<Constrained_Delaunay_triangulation_2>
+        Delaunay_mesh_size_criteria_2;
+
     void set_extra_info();
 
     Constrained_Delaunay_triangulation_2 triangulation;
-    std::vector<CGAL::Point_2<Kernel>> seeds;
+    std::vector<Point_2> seeds;
+
+    size_t d_num_vertices;
+    size_t d_num_faces;
 };
 
 #endif // MESH2D_HPP
