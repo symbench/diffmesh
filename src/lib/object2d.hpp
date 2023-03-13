@@ -34,7 +34,7 @@ class Object2d
 public:
         static Object2d polygon(const std::vector<std::tuple<DiffReal, DiffReal>> &points);
         static Object2d rectangle(const DiffReal &width, const DiffReal &height);
-        static Object2d circle(const DiffReal &radius, std::size_t segments = 60);
+        static Object2d circle(const DiffReal &radius, std::size_t segments = 24);
 
         std::size_t num_components() const;
         std::size_t num_polygons() const;
@@ -68,7 +68,7 @@ public:
         Object2d difference(const Object2d &other) const;
         Object2d simplify(double epsilon = 0.001) const;
 
-        int contains(const DiffReal &xpos, const DiffReal &ypos) const;
+        int contains(const std::tuple<DiffReal, DiffReal> &point) const;
 
         std::string repr() const;
 

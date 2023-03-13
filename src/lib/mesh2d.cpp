@@ -41,7 +41,7 @@ Mesh2d::Mesh2d(const Object2d &object)
                 auto p2 = f->vertex(2)->point();
                 auto c = CGAL::centroid(p0, p1, p2);
 
-                if (object.contains(c.x(), c.y()) < 0)
+                if (object.contains({c.x(), c.y()}) < 0)
                         seeds.push_back(c);
         }
 

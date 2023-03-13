@@ -49,6 +49,7 @@ public:
 
         double get_value() const { return CGAL::to_double(value); }
         std::vector<double> get_derivs() const;
+        std::vector<double> get_derivs(std::size_t num_derivs) const;
 
         bool operator==(const DiffReal &other) const { return value == other.value; }
         bool operator!=(const DiffReal &other) const { return value != other.value; }

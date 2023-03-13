@@ -275,9 +275,9 @@ Object2d::Polygon_2 Object2d::simplify2(const Polygon_2 &polygon, double epsilon
         return Polygon_2(points.begin(), points.end());
 }
 
-int Object2d::contains(const DiffReal &xpos, const DiffReal &ypos) const
+int Object2d::contains(const std::tuple<DiffReal, DiffReal> &point) const
 {
-        Point_2 p(xpos, ypos);
+        Point_2 p(std::get<0>(point), std::get<1>(point));
         for (auto &c : components)
         {
                 auto r = CGAL::oriented_side(p, c);

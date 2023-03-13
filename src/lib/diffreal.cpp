@@ -28,6 +28,17 @@ std::vector<double> DiffReal::get_derivs() const
         return result;
 }
 
+std::vector<double> DiffReal::get_derivs(std::size_t num_derivs) const
+{
+        std::vector<double> result;
+        result.reserve(num_derivs);
+        for (std::size_t i = 0; i < std::min(derivs.size(), num_derivs); i++)
+                result.emplace_back(CGAL::to_double(derivs[i]));
+        while (result.size() < num_derivs)
+                result.emplace_back(0.0);
+        return result;
+}
+
 DiffReal DiffReal::operator-() const
 {
         DiffReal result;
