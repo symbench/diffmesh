@@ -81,6 +81,7 @@ ax.quiver(points[:, 0, 0], points[:, 1, 0],
           angles='xy', scale=1.0, units='xy')
 plt.show()
 
+assert object.num_polygons() == 2
 object_outer = object.get_polygon(0)
 object_inner = object.get_polygon(1)
 boundary = numpy.zeros((num_vertices, 2), dtype=bool)
