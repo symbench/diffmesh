@@ -84,10 +84,14 @@ plt.show()
 assert object.num_polygons() == 2
 object_outer = object.get_polygon(0)
 object_inner = object.get_polygon(1)
-boundary = numpy.zeros((num_vertices, 2), dtype=bool)
+boundary = numpy.zeros((num_vertices, ), dtype=int)
 for v, p in enumerate(mesh.vertices()):
-    boundary[v, 0] = object_outer.contains(p) == 0
-    boundary[v, 1] = object_inner.contains(p) == 0
+    if object_inner.contains(p) == 0:
+        assert boundary[v] in [0, 1]
+        boundary[v] = 1
+    if object_outer.contains(p) == 0:
+        assert boundary[v] in [0, 2]
+        boundary[v] = 2
 
 faces = numpy.array(mesh.faces(), dtype=int)
 
